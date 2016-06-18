@@ -13,6 +13,14 @@ Bundler.require
 BUSINESSES_PER_PAGE = 50
 DEFAULT_PAGE = 1
 
+# For basic auth on all endpoints, More information available on the official
+# Sinatra documentation
+# taken from: http://www.sinatrarb.com/faq.html
+#
+# use Rack::Auth::Basic, "Restricted Area" do |username, password|
+#   username == 'admin' && password == 'password'
+# end
+
 get "/businesses" do
   content_type :json
 
