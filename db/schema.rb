@@ -11,7 +11,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160617051749) do
+ActiveRecord::Schema.define(version: 20160708151008) do
+
+  create_table "authorization_tokens", force: :cascade do |t|
+    t.string   "token"
+    t.datetime "revoked_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "businesses", force: :cascade do |t|
     t.string   "uuid"

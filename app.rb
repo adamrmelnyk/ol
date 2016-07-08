@@ -3,6 +3,7 @@ require 'json'
 require 'sinatra'
 require 'sinatra/activerecord'
 require './business'
+require './authorization_token'
 require './environments'
 require 'will_paginate'
 require 'will_paginate/active_record'
@@ -23,8 +24,7 @@ DEFAULT_PAGE = 1
 
 get "/businesses" do
   content_type :json
-
-  check_authorization
+  halt 401 unless check_authorization(request.env["HTTP_AUTHORIZATION"])
 
   page = params.fetch('page', DEFAULT_PAGE)
   page = DEFAULT_PAGE unless page.to_i.to_s == page
@@ -36,16 +36,13 @@ end
 
 get "/businesses/:id" do
   content_type :json
-
-  check_authorization
-
+  halt 401 unless check_authorization(request.env["HTTP_AUTHORIZATION"])
   params[:id].to_i.to_s == params[:id] ? get_business(params[:id]) : render_404_page
 end
 
 get "/gettoken" do
   content_type :json
-
-  # TODO: create the token and send back as json
+  {"token": create_authorization_token}.to_json
 end
 
 not_found do
@@ -54,8 +51,15 @@ not_found do
   render_404_page
 end
 
+def create_authorization_token
+  a = AuthorizationToken.new
+  a.token = SecureRandom.urlsafe_base64(64)
+  a.save
+  a.token
+end
+
 def check_authorization token
-  # TODO: check auth here
+  AuthorizationToken.where(token: token, revoked_at: nil).first
 end
 
 def get_business id
