@@ -24,6 +24,8 @@ DEFAULT_PAGE = 1
 get "/businesses" do
   content_type :json
 
+  check_authorization
+
   page = params.fetch('page', DEFAULT_PAGE)
   page = DEFAULT_PAGE unless page.to_i.to_s == page
   per_page = params.fetch('per_page', BUSINESSES_PER_PAGE)
@@ -35,13 +37,25 @@ end
 get "/businesses/:id" do
   content_type :json
 
+  check_authorization
+
   params[:id].to_i.to_s == params[:id] ? get_business(params[:id]) : render_404_page
+end
+
+get "/gettoken" do
+  content_type :json
+
+  # TODO: create the token and send back as json
 end
 
 not_found do
   content_type :json
 
   render_404_page
+end
+
+def check_authorization token
+  # TODO: check auth here
 end
 
 def get_business id
